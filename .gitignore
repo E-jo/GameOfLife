@@ -1,0 +1,5 @@
+# Project exclude paths
+/.gradle/
+/Game of Life (Java)/task/build/
+/Game of Life (Java)/task/out/
+/Game of Life (Java)/task/out/production/classes/

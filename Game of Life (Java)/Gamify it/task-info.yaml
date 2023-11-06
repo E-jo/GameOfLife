@@ -1,0 +1,441 @@
+type: edu
+files:
+  - name: src/life/Main.java
+    visible: true
+    text: |
+      package life;
+      
+      public class Main {
+          public static void main(String[] args) {
+              System.out.println("Hello, world!");
+          }
+      }
+    learner_created: false
+  - name: test/GameOfLifeTest.java
+    visible: false
+    text: |
+      import life.GameOfLife;
+      import org.assertj.swing.fixture.JButtonFixture;
+      import org.assertj.swing.fixture.JLabelFixture;
+      import org.assertj.swing.fixture.JToggleButtonFixture;
+      import org.hyperskill.hstest.common.Utils;
+      import org.hyperskill.hstest.dynamic.DynamicTest;
+      import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
+      import org.hyperskill.hstest.stage.SwingTest;
+      import org.hyperskill.hstest.testcase.CheckResult;
+      import org.hyperskill.hstest.testing.swing.SwingComponent;
+      
+      import java.util.regex.Matcher;
+      import java.util.regex.Pattern;
+      
+      import static org.hyperskill.hstest.testcase.CheckResult.correct;
+      import static org.hyperskill.hstest.testcase.CheckResult.wrong;
+      
+      public class GameOfLifeTest extends SwingTest {
+      
+          public GameOfLifeTest() {
+              super(new GameOfLife());
+          }
+      
+          @SwingComponent(name = "GenerationLabel")
+          JLabelFixture generationLabel;
+      
+          @SwingComponent(name = "AliveLabel")
+          JLabelFixture aliveLabel;
+      
+          @SwingComponent(name = "PlayToggleButton")
+          JToggleButtonFixture playButton;
+      
+          @SwingComponent(name = "ResetButton")
+          JButtonFixture resetButton;
+      
+          @DynamicTest(order = 1)
+          CheckResult testWindow() {
+              requireVisible(window);
+              return correct();
+          }
+      
+          @DynamicTest(order = 2)
+          CheckResult testGenerationLabel() {
+              requireEnabled(generationLabel);
+              requireVisible(generationLabel);
+              return correct();
+          }
+      
+          @DynamicTest(order = 3)
+          CheckResult testAliveLabel() {
+              requireEnabled(aliveLabel);
+              requireVisible(aliveLabel);
+              return correct();
+          }
+      
+          @DynamicTest(order = 4)
+          CheckResult testForIntegerInLabels() {
+      
+              Pattern pattern = Pattern.compile("\\d+");
+              Matcher matcher = pattern.matcher(generationLabel.text());
+      
+              if (!matcher.find()) {
+                  return wrong("The 'GenerationLabel' doesn't contain an integer number!");
+              }
+      
+              matcher = pattern.matcher(aliveLabel.text());
+      
+              if (!matcher.find()) {
+                  return wrong("The 'AliveLabel' doesn't contain an integer number!");
+              }
+      
+              return correct();
+          }
+      
+          @DynamicTest(order = 5)
+          CheckResult testPlayButton() {
+              requireEnabled(playButton);
+              requireVisible(playButton);
+              try {
+                  playButton.click();
+              } catch (IllegalStateException e) {
+                  throw new WrongAnswer("Make sure that the PlayToggleButton is shown.");
+              }
+              playButton.click();
+              return correct();
+          }
+      
+          @DynamicTest(order = 6)
+          CheckResult testResetButton() {
+              requireEnabled(resetButton);
+              requireVisible(resetButton);
+              resetButton.click();
+              return correct();
+          }
+      
+          @DynamicTest(order = 7)
+          CheckResult testButtonsActions() {
+      
+              playButton.uncheck();
+              resetButton.click();
+      
+              int firstGenerationNumber = getNumberFromLabel(generationLabel);
+              Utils.sleep(200);
+              int secondGenerationNumber = getNumberFromLabel(generationLabel);
+      
+              if (firstGenerationNumber != secondGenerationNumber) {
+                  return wrong("When PlayToggleButton is not toggled the program shouldn't generate new generations! The number in GenerationLabel shouldn't change!");
+              }
+      
+              resetButton.click();
+              firstGenerationNumber = getNumberFromLabel(generationLabel);
+              playButton.check();
+              Utils.sleep(200);
+              secondGenerationNumber = getNumberFromLabel(generationLabel);
+      
+              if (firstGenerationNumber == secondGenerationNumber) {
+                  return wrong("When PlayToggleButton is toggled the program should generate new generations! The number in GenerationLabel should change!\n" +
+                          "Also make sure your program doesn't sleep more than 150 ms after each generation!");
+              }
+      
+              return correct();
+          }
+      
+          private static int getNumberFromLabel(JLabelFixture labelFixture) {
+              Pattern pattern = Pattern.compile("\\d+");
+              Matcher matcher = pattern.matcher(labelFixture.text());
+      
+              System.out.println(labelFixture.text());
+      
+              if (!matcher.find()) {
+                  throw new WrongAnswer("Can't find a number in the '" + labelFixture.text() + "'!");
+              }
+      
+              return Integer.parseInt(matcher.group());
+          }
+      }
+    learner_created: false
+  - name: src/life/WorldController.java
+    visible: true
+    text: |
+      package life;
+      
+      public class WorldController {
+      
+          private WorldModel model;
+          private GameOfLife view;
+      
+          public WorldController(WorldModel model, GameOfLife view) {
+              this.model = model;
+              this.view = view;
+          }
+      
+          public void runGame() throws InterruptedException {
+              char[][] currentWorldArray = model.getWorld().clone();
+              view.refreshView(model, 0);
+              Thread.sleep(500);
+      
+              for (int i = 0; i < 50; i++) {
+                  WorldModel currentWorld = doGeneration(currentWorldArray);
+                  currentWorldArray = currentWorld.getWorld();
+                  view.refreshView(currentWorld, i + 1);
+      
+                  Thread.sleep(500);
+              }
+          }
+      
+          private WorldModel doGeneration(char[][] currentWorld) {
+              int alive = 0;
+              char[][] newWorld = new char[currentWorld.length][currentWorld.length];
+              for (int i = 0; i < currentWorld.length; i++) {
+                  for (int j = 0; j < currentWorld.length; j++) {
+                      int neighbors = 0;
+                      if (checkNorth(i, j, currentWorld)) {
+                          neighbors++;
+                      }
+                      if (checkSouth(i, j, currentWorld)) {
+                          neighbors++;
+                      }
+                      if (checkEast(i, j, currentWorld)) {
+                          neighbors++;
+                      }
+                      if (checkWest(i, j, currentWorld)) {
+                          neighbors++;
+                      }
+                      if (checkNorthWest(i, j, currentWorld)) {
+                          neighbors++;
+                      }
+                      if (checkNorthEast(i, j, currentWorld)) {
+                          neighbors++;
+                      }
+                      if (checkSouthWest(i, j, currentWorld)) {
+                          neighbors++;
+                      }
+                      if (checkSouthEast(i, j, currentWorld)) {
+                          neighbors++;
+                      }
+      
+                      if (neighbors == 3) {
+                          newWorld[i][j] = 'O';
+                      } else if (neighbors < 2 || neighbors > 3) {
+                          newWorld[i][j] = ' ';
+                      } else {
+                          newWorld[i][j] = currentWorld[i][j];
+                      }
+                      if (newWorld[i][j] == 'O') {
+                          alive++;
+                      }
+                  }
+              }
+              model.setAlive(alive);
+              return new WorldModel(newWorld, alive);
+          }
+      
+          public static boolean checkNorth(int x, int y, char[][] world) {
+              if (x == 0) {
+                  return world[world.length - 1][y] == 'O';
+              } else {
+                  return world[x - 1][y] == 'O';
+              }
+          }
+      
+          public static boolean checkSouth(int x, int y, char[][] world) {
+              if (x == world.length - 1) {
+                  return world[0][y] == 'O';
+              } else {
+                  return world[x + 1][y] == 'O';
+              }
+          }
+      
+          public static boolean checkEast(int x, int y, char[][] world) {
+              if (y == world.length - 1) {
+                  return world[x][0] == 'O';
+              } else {
+                  return world[x][y + 1] == 'O';
+              }
+          }
+      
+          public static boolean checkWest(int x, int y, char[][] world) {
+              if (y == 0) {
+                  return world[x][world.length - 1] == 'O';
+              } else {
+                  return world[x][y - 1] == 'O';
+              }
+          }
+      
+          public static boolean checkNorthWest(int x, int y, char[][] world) {
+              if (y == 0) {
+                  return checkNorth(x, world.length - 1, world);
+              } else {
+                  return checkNorth(x, y - 1, world);
+              }
+          }
+      
+          public static boolean checkNorthEast(int x, int y, char[][] world) {
+              if (y == world.length - 1) {
+                  return checkNorth(x, 0, world);
+              } else {
+                  return checkNorth(x, y + 1, world);
+              }
+          }
+      
+          public static boolean checkSouthWest(int x, int y, char[][] world) {
+              if (y == 0) {
+                  return checkSouth(x, world.length - 1, world);
+              } else {
+                  return checkSouth(x, y - 1, world);
+              }
+          }
+      
+          public static boolean checkSouthEast(int x, int y, char[][] world) {
+              if (y == world.length - 1) {
+                  return checkSouth(x, 0, world);
+              } else {
+                  return checkSouth(x, y + 1, world);
+              }
+          }
+      }
+    learner_created: true
+  - name: src/life/GameOfLife.java
+    visible: true
+    text: |
+      package life;
+      
+      import javax.swing.*;
+      import javax.swing.border.BevelBorder;
+      import java.awt.*;
+      import java.util.HashMap;
+      import java.util.Map;
+      
+      public class GameOfLife extends JFrame {
+          private JLabel generationLabel, aliveLabel, generationTxtLabel, aliveTxtLabel;
+      
+          private JButton startBtn;
+          private Map<String, JLabel> boxes;
+          public GameOfLife() {
+              super("Game of Life");
+              Container contentPane = getContentPane();
+              contentPane.setLayout(new BorderLayout());
+      
+              setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+              setSize(610, 630);
+              setLocationRelativeTo(null);
+              setResizable(false);
+      
+              JPanel labelPanel = new JPanel();
+              labelPanel.setBounds(50, 10, 510, 30);
+      
+              generationTxtLabel = new JLabel("Generation:");
+              //generationTxtLabel.setBounds(50, 10, 75, 30);
+              generationLabel = new JLabel("0");
+              //generationLabel.setBounds(140, 10, 100, 30);
+              generationLabel.setName("GenerationLabel");
+      
+              aliveTxtLabel = new JLabel("Alive:");
+              //aliveTxtLabel.setBounds(290, 10, 75, 30);
+              aliveLabel = new JLabel("0");
+              //aliveLabel.setBounds(360, 10, 100, 30);
+              aliveLabel.setName("AliveLabel");
+      
+              JToggleButton playToggleBtn = new JToggleButton("Start/Stop");
+              playToggleBtn.setName("PlayToggleButton");
+      
+              JButton resetBtn = new JButton("Reset");
+              resetBtn.setName("ResetButton");
+      
+              labelPanel.add(generationTxtLabel);
+              labelPanel.add(generationLabel);
+              labelPanel.add(aliveTxtLabel);
+              labelPanel.add(aliveLabel);
+              labelPanel.add(playToggleBtn);
+              labelPanel.add(resetBtn);
+      
+              contentPane.add(labelPanel);
+      
+              JPanel boxPanel = new JPanel();
+              //boxPanel.setBounds(50, 60, 510, 500);
+      
+              boxes = new HashMap<>();
+              for (int i = 0; i < 10; i++) {
+                  for (int j = 0; j < 10; j++) {
+                      String key = i + "," + j;
+                      JLabel label = new JLabel();
+                      label.setBorder(new BevelBorder(BevelBorder.RAISED));
+                      label.setBounds((i + 1) * 50, (j + 1) * 50, 50, 50);
+                      System.out.println("x: " + (i + 1) * 50 + ", y: " + (j + 1) * 50);
+                      boxes.put(key, label);
+                      contentPane.add(label);
+                  }
+              }
+              contentPane.add(boxPanel);
+      
+              setVisible(true);
+          }
+      
+          public void refreshView(WorldModel currentWorld, int generation) {
+              generationLabel.setText(String.valueOf(generation));
+              aliveLabel.setText(String.valueOf(currentWorld.getAlive()));
+              char[][] currentWorldArray = currentWorld.getWorld();
+              for (int i = 0; i < 10; i++) {
+                  for (int j = 0; j < 10; j++) {
+                      JLabel currentLabel = boxes.get(i + "," + j);
+                      if (currentWorldArray[i][j] == 'O') {
+                          currentLabel.setBackground(Color.GREEN);
+                          currentLabel.setText("*");
+                      } else {
+                          currentLabel.setBackground(Color.WHITE);
+                          currentLabel.setText(" ");
+                      }
+                  }
+              }
+          }
+      }
+    learner_created: true
+  - name: src/life/WorldModel.java
+    visible: true
+    text: |
+      package life;
+      
+      import java.util.Random;
+      
+      public class WorldModel {
+          private char[][] world = new char[10][10];
+          private int alive;
+      
+          public WorldModel() {
+              Random random = new Random();
+      
+              for (int i = 0; i < 10; i++) {
+                  for (int j = 0; j < 10; j++) {
+                      if (random.nextBoolean()) {
+                          world[i][j] = 'O';
+                          alive++;
+                      } else {
+                          world[i][j] = ' ';
+                      }
+                  }
+              }
+          }
+      
+          public WorldModel(char[][] currentWorldArray, int alive) {
+              world = currentWorldArray;
+              this.alive = alive;
+          }
+      
+          public char[][] getWorld() {
+              return world;
+          }
+      
+          public int getAlive() {
+              return alive;
+          }
+      
+          public void setAlive(int alive) {
+              this.alive = alive;
+          }
+      
+      }
+    learner_created: true
+feedback_link: https://hyperskill.org/projects/54/stages/299/implement#comment
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">Hyperskill</a>
+    to continue learning.
+  time: "Mon, 06 Nov 2023 00:00:07 UTC"
+record: -1
