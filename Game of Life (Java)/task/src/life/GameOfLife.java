@@ -41,24 +41,26 @@ public class GameOfLife extends JFrame {
         aliveLabel = new JLabel("0");
         aliveLabel.setName("AliveLabel");
 
+        JButton resetBtn = new JButton("Reset");
+        resetBtn.setName("ResetButton");
+        resetBtn.addActionListener(e -> resetGame());
+
         playToggleBtn = new JToggleButton("Start");
         playToggleBtn.setName("PlayToggleButton");
         playToggleBtn.addItemListener(itemEvent -> {
             if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
                 playToggleBtn.setText("Stop");
                 running = true;
+                resetBtn.setEnabled(false);
                 new GameWorker().execute();
             } else if (itemEvent.getStateChange() == ItemEvent.DESELECTED) {
                 playToggleBtn.setText("Start");
                 running = false;
+                resetBtn.setEnabled(true);
             }
         });
 
         JLabel spacer = new JLabel("                      ");
-
-        JButton resetBtn = new JButton("Reset");
-        resetBtn.setName("ResetButton");
-        resetBtn.addActionListener(e -> resetGame());
 
         labelPanel.add(generationTxtLabel);
         labelPanel.add(generationLabel);
@@ -112,10 +114,12 @@ public class GameOfLife extends JFrame {
     }
 
     private void resetGame() {
+        System.out.println("resetGame()");
         running = false;
         playToggleBtn.setSelected(false);
         generation = 0;
         model = new WorldModel();
+        System.out.println("Alive in new model: " + model.getAlive());
 
         generationLabel.setText("0");
         aliveLabel.setText("0");
@@ -143,13 +147,13 @@ public class GameOfLife extends JFrame {
 
         private void runGame() throws InterruptedException {
             System.out.println("runGame()");
-            char[][] currentWorldArray = model.getWorld().clone();
+            char[][] currentWorldArray;
             WorldModel currentWorld = model;
 
             while (running) {
                 //System.out.println("Running generation " + generation);
-                currentWorld = doGeneration(currentWorldArray);
                 currentWorldArray = currentWorld.getWorld();
+                currentWorld = doGeneration(currentWorldArray);
                 refreshView(currentWorld, generation);
 
                 generation++;
@@ -202,7 +206,6 @@ public class GameOfLife extends JFrame {
                     }
                 }
             }
-            model.setAlive(alive);
             return new WorldModel(newWorld, alive);
         }
 
