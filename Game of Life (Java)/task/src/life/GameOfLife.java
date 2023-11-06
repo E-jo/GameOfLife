@@ -66,10 +66,10 @@ public class GameOfLife extends JFrame {
         });
 
         speedSlider = new JSlider();
-        speedSlider.setMinimum(1);
-        speedSlider.setMaximum(10);
+        speedSlider.setMinimum(0);
+        speedSlider.setMaximum(9);
         speedSlider.setValue(5);
-        speedSlider.addChangeListener(changeEvent -> speed = speedSlider.getValue());
+        speedSlider.addChangeListener(changeEvent -> speed = 10 - speedSlider.getValue());
 
         labelPanel.add(generationTxtLabel);
         labelPanel.add(generationLabel);
@@ -167,7 +167,7 @@ public class GameOfLife extends JFrame {
                 refreshView(currentWorld, generation);
 
                 generation++;
-                Thread.sleep(150 * speed);
+                Thread.sleep(150L * speed);
             }
 
             model = currentWorld;
