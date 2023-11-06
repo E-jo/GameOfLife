@@ -11,6 +11,7 @@ public class GameOfLife extends JFrame {
     private JLabel generationLabel, aliveLabel, generationTxtLabel, aliveTxtLabel;
 
     private JToggleButton playToggleBtn;
+    private JPanel labelPanel;
     private JSlider speedSlider;
     private Map<String, JLabel> boxes;
     private WorldModel model;
@@ -31,12 +32,12 @@ public class GameOfLife extends JFrame {
         contentPane.setLayout(new BorderLayout());
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(610, 630);
+        setSize(625, 630);
         setLocationRelativeTo(null);
         setResizable(false);
 
-        JPanel labelPanel = new JPanel();
-        labelPanel.setBounds(50, 10, 510, 30);
+        labelPanel = new JPanel();
+        labelPanel.setBounds(0, 10, 625, 30);
 
         generationTxtLabel = new JLabel("Generation:");
         generationLabel = new JLabel("0");
@@ -106,15 +107,21 @@ public class GameOfLife extends JFrame {
     public void refreshView(WorldModel currentWorld, int generation) {
         generationLabel.setText(String.valueOf(generation));
         aliveLabel.setText(String.valueOf(currentWorld.getAlive()));
-        generationLabel.revalidate();
-        aliveLabel.revalidate();
+        //generationLabel.revalidate();
+        //aliveLabel.revalidate();
+        labelPanel.revalidate();
         char[][] currentWorldArray = currentWorld.getWorld();
         for (int i = 0; i < 100; i++) {
             for (int j = 0; j < 100; j++) {
                 JLabel currentLabel = boxes.get(i + "," + j);
                 if (currentWorldArray[i][j] == 'O') {
-                    currentLabel.setBackground(Color.GREEN);
-                    currentLabel.setText("*");
+                    if (currentWorld.getAlive() > 1000) {
+                        currentLabel.setBackground(Color.GREEN);
+                    } else if (currentWorld.getAlive() > 500) {
+                        currentLabel.setBackground(Color.BLUE);
+                    } else {
+                        currentLabel.setBackground(Color.RED);
+                    }
                 } else {
                     currentLabel.setBackground(Color.WHITE);
                     currentLabel.setText(" ");
@@ -127,18 +134,27 @@ public class GameOfLife extends JFrame {
         System.out.println("resetGame()");
         running = false;
         playToggleBtn.setSelected(false);
-        generation = 0;
+        generation = 1;
         model = new WorldModel();
-        System.out.println("Alive in new model: " + model.getAlive());
+        //System.out.println("Alive in new model: " + model.getAlive());
 
-        generationLabel.setText("0");
-        aliveLabel.setText("0");
+        generationLabel.setText(String.valueOf(generation));
+        aliveLabel.setText(String.valueOf(model.getAlive()));
 
+        char[][] currentWorldArray = model.getWorld();
         for (int i = 0; i < 100; i++) {
             for (int j = 0; j < 100; j++) {
                 JLabel currentLabel = boxes.get(i + "," + j);
                 currentLabel.setBackground(Color.WHITE);
-                currentLabel.setText(" ");
+                if (currentWorldArray[i][j] == 'O') {
+                    if (model.getAlive() > 1000) {
+                        currentLabel.setBackground(Color.GREEN);
+                    } else if (model.getAlive() > 500) {
+                        currentLabel.setBackground(Color.BLUE);
+                    } else {
+                        currentLabel.setBackground(Color.RED);
+                    }
+                }
             }
         }
     }
@@ -162,12 +178,12 @@ public class GameOfLife extends JFrame {
 
             while (running) {
                 //System.out.println("Running generation " + generation);
+                generation++;
                 currentWorldArray = currentWorld.getWorld();
                 currentWorld = doGeneration(currentWorldArray);
                 refreshView(currentWorld, generation);
 
-                generation++;
-                Thread.sleep(150L * speed);
+                Thread.sleep(100L * speed);
             }
 
             model = currentWorld;
