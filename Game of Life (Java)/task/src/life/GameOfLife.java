@@ -11,16 +11,21 @@ public class GameOfLife extends JFrame {
     private JLabel generationLabel, aliveLabel, generationTxtLabel, aliveTxtLabel;
 
     private JToggleButton playToggleBtn;
+    private JSlider speedSlider;
     private Map<String, JLabel> boxes;
     private WorldModel model;
     private boolean running;
     private int generation;
+
+    private int speed;
+
     public GameOfLife() {
         super("Game of Life");
 
         model = new WorldModel();
         running = false;
         generation = 0;
+        speed = 5;
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
@@ -60,13 +65,18 @@ public class GameOfLife extends JFrame {
             }
         });
 
-        JLabel spacer = new JLabel("                      ");
+        speedSlider = new JSlider();
+        speedSlider.setMinimum(1);
+        speedSlider.setMaximum(10);
+        speedSlider.setValue(5);
+        speedSlider.addChangeListener(changeEvent -> speed = speedSlider.getValue());
 
         labelPanel.add(generationTxtLabel);
         labelPanel.add(generationLabel);
         labelPanel.add(aliveTxtLabel);
         labelPanel.add(aliveLabel);
-        labelPanel.add(spacer);
+        labelPanel.add(speedSlider);
+
         labelPanel.add(playToggleBtn);
         labelPanel.add(resetBtn);
 
@@ -157,7 +167,7 @@ public class GameOfLife extends JFrame {
                 refreshView(currentWorld, generation);
 
                 generation++;
-                Thread.sleep(150);
+                Thread.sleep(150 * speed);
             }
 
             model = currentWorld;
