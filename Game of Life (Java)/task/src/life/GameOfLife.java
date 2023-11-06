@@ -144,16 +144,19 @@ public class GameOfLife extends JFrame {
         private void runGame() throws InterruptedException {
             System.out.println("runGame()");
             char[][] currentWorldArray = model.getWorld().clone();
+            WorldModel currentWorld = model;
 
             while (running) {
                 //System.out.println("Running generation " + generation);
-                WorldModel currentWorld = doGeneration(currentWorldArray);
+                currentWorld = doGeneration(currentWorldArray);
                 currentWorldArray = currentWorld.getWorld();
                 refreshView(currentWorld, generation);
 
                 generation++;
                 Thread.sleep(150);
             }
+
+            model = currentWorld;
         }
 
         private WorldModel doGeneration(char[][] currentWorld) {
