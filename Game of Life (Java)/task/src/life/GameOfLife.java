@@ -32,12 +32,12 @@ public class GameOfLife extends JFrame {
         contentPane.setLayout(new BorderLayout());
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(625, 630);
+        setSize(620, 630);
         setLocationRelativeTo(null);
         setResizable(false);
 
         labelPanel = new JPanel();
-        labelPanel.setBounds(0, 10, 625, 30);
+        labelPanel.setBounds(0, 10, 620, 30);
 
         generationTxtLabel = new JLabel("Generation:");
         generationLabel = new JLabel("0");
@@ -107,9 +107,7 @@ public class GameOfLife extends JFrame {
     public void refreshView(WorldModel currentWorld, int generation) {
         generationLabel.setText(String.valueOf(generation));
         aliveLabel.setText(String.valueOf(currentWorld.getAlive()));
-        //generationLabel.revalidate();
-        //aliveLabel.revalidate();
-        labelPanel.revalidate();
+
         char[][] currentWorldArray = currentWorld.getWorld();
         for (int i = 0; i < 100; i++) {
             for (int j = 0; j < 100; j++) {
@@ -299,6 +297,4 @@ public class GameOfLife extends JFrame {
             }
         }
     }
-
-
 }

@@ -3,7 +3,7 @@ hyperskill_project:
   ide_files: https://cogniterra.org/media/attachments/lesson/23037/additional_files.json
   is_template_based: false
   use_ide: true
-update_date: "Mon, 06 Nov 2023 17:53:57 UTC"
+update_date: "Sun, 19 Nov 2023 16:28:52 UTC"
 stages:
   - id: 294
     step: 5436
@@ -26,9 +26,9 @@ topics:
       theory_id: 3739
     - title: Introduction to Java
       theory_id: 3500
-    - title: Basic literals
+    - title: "Basic literals: numbers, strings and characters"
       theory_id: 3522
-    - title: Overview of the basic program
+    - title: Writing first program
       theory_id: 3521
     - title: Printing data
       theory_id: 3749
@@ -36,7 +36,7 @@ topics:
       theory_id: 3518
     - title: Comments
       theory_id: 3520
-    - title: Scanning the input
+    - title: Reading user's input with Scanner
       theory_id: 9055
     - title: Coding style conventions
       theory_id: 12411
@@ -46,33 +46,33 @@ topics:
       theory_id: 3519
     - title: Integer types and operations
       theory_id: 3565
-    - title: Boolean and logical operations
+    - title: Boolean type and operations. True and false
       theory_id: 3516
-    - title: Relational operators
+    - title: Comparing values. Relational operators
       theory_id: 3512
     - title: Conditional statement
       theory_id: 3503
-    - title: Ternary operator
+    - title: One-line condition with ternary operator
       theory_id: 3506
     - title: Increment and decrement
       theory_id: 5008
-    - title: The while and do-while loops
+    - title: While and do-while loops
       theory_id: 3498
-    - title: The for-loop
+    - title: For-loop
       theory_id: 3505
-    - title: Branching statements
+    - title: Break and continue. Branching
       theory_id: 3507
-    - title: Switch statement
+    - title: "Multiple conditions: switch"
       theory_id: 3504
-    - title: Sizes and ranges
+    - title: Data types and their sizes
       theory_id: 3532
     - title: Type casting
       theory_id: 3510
-    - title: Calling a method
+    - title: Calling methods
       theory_id: 10973
-    - title: Declaring a method
+    - title: Declaring methods
       theory_id: 10982
-    - title: The main method
+    - title: Method "main"
       theory_id: 3489
     - title: Functional decomposition
       theory_id: 10570
@@ -86,21 +86,21 @@ topics:
       theory_id: 3514
     - title: String
       theory_id: 3523
-    - title: Final variables
+    - title: Constants. Final variables
       theory_id: 7427
-    - title: Introduction to OOP
+    - title: What is object-oriented programming
       theory_id: 3614
     - title: IntelliJ IDEA
-      theory_id: 3801
-    - title: Random
+      theory_id: 37202
+    - title: Random class
       theory_id: 4910
     - title: Defining classes
       theory_id: 3618
     - title: Instance methods
       theory_id: 3495
-    - title: Constructor
+    - title: Initializing new instances. Constructor
       theory_id: 3535
-    - title: Objects
+    - title: Objects and their properties
       theory_id: 4727
     - title: Static members
       theory_id: 3534
@@ -111,15 +111,15 @@ topics:
       theory_id: 3602
     - title: Errors in programs
       theory_id: 3536
-    - title: What is an exception
+    - title: First glance at exceptions
       theory_id: 3497
-    - title: Package
+    - title: Grouping classes with packages
       theory_id: 3621
     - title: Hierarchy of exceptions
       theory_id: 3570
     - title: Exception handling
       theory_id: 3552
-    - title: What is a bug
+    - title: What are bugs
       theory_id: 5504
     - title: Multidimensional array
       theory_id: 1933
@@ -135,12 +135,12 @@ topics:
       theory_id: 3583
     - title: Multiple constructors
       theory_id: 3538
-    - title: The keyword super
+    - title: Keyword "super"
       theory_id: 3588
   2:
     - title: Immutability
       theory_id: 7929
-    - title: NPE
+    - title: NullPointerException
       theory_id: 1945
     - title: Introduction to generic programming
       theory_id: 3492
@@ -148,15 +148,15 @@ topics:
       theory_id: 6692
     - title: Referencing subclass objects
       theory_id: 3585
-    - title: Annotations basics
+    - title: Adding annotations
       theory_id: 3622
-    - title: Hiding and overriding
+    - title: Method overriding
       theory_id: 3572
     - title: Polymorphism
       theory_id: 3587
-    - title: Interface
+    - title: Declaring functionality with interfaces
       theory_id: 3615
-    - title: Anonymous classes
+    - title: Anonymous class
       theory_id: 11896
     - title: Abstract class
       theory_id: 3597
@@ -164,7 +164,7 @@ topics:
       theory_id: 3533
     - title: Anonymous classes properties
       theory_id: 3564
-    - title: Boxing and unboxing
+    - title: Wrapping classes. Boxing
       theory_id: 3595
   3:
     - title: Introduction to UI/UX
